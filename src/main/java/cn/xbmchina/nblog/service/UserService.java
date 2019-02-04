@@ -26,6 +26,7 @@ public class UserService {
 
     public User getUser(User user) {
         if (user != null && StringUtils.isNotBlank(user.getPhone()) && StringUtils.isNotBlank(user.getPassword())){
+            user.setPassword("");
             return userMapper.getUser(user);
         }
         return null;
