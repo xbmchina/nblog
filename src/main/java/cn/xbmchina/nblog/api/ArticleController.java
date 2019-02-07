@@ -1,5 +1,6 @@
 package cn.xbmchina.nblog.api;
 
+import cn.xbmchina.nblog.common.PageResult;
 import cn.xbmchina.nblog.common.ResponseResult;
 import cn.xbmchina.nblog.entity.Article;
 import cn.xbmchina.nblog.service.ArticleService;
@@ -17,25 +18,14 @@ public class ArticleController {
     private ArticleService articleService;
 
 
-    @RequestMapping("/add")
-    public ResponseResult addArticle(Article article) {
+    @RequestMapping("/save")
+    public ResponseResult saveArticle(Article article) {
 
-        int addArticle = articleService.addArticle(article);
+        int addArticle = articleService.saveArticle(article);
         if (addArticle > 0) {
-            return ResponseResult.ofSuccess("添加成功",null);
+            return ResponseResult.ofSuccess("操作成功",null);
         }
-        return ResponseResult.ofError(500,"添加失败", null);
-    }
-
-
-    @RequestMapping("/update")
-    public ResponseResult updateArticle(Article article) {
-
-        int updateArticle = articleService.updateArticle(article);
-        if (updateArticle > 0) {
-            return ResponseResult.ofSuccess("修改成功",null);
-        }
-        return ResponseResult.ofError(500,"修改失败", null);
+        return ResponseResult.ofError(500,"操作失败", null);
     }
 
 
@@ -53,11 +43,25 @@ public class ArticleController {
     @RequestMapping("/list")
     public ResponseResult getArticleList(Article article) {
 
-        List<Article> list = articleService.getArticleList(article);
+        PageResult<Article> list = articleService.getArticleList(article);
         if (list != null) {
             return ResponseResult.ofSuccess("查询成功",list);
         }
         return ResponseResult.ofError(500,"查询失败", null);
     }
+
+    @RequestMapping("/del")
+    public ResponseResult deleteArticle(Long id) {
+
+        int result = articleService.deleteArticle(id);
+        if (result > 0 ) {
+            return ResponseResult.ofSuccess("删除成功",null);
+        }
+        return ResponseResult.ofError(500,"删除失败", null);
+    }
+
+
+
+
 
 }
