@@ -39,7 +39,8 @@ public interface ArticleMapper {
 
 
 
-    @Select(" SELECT  id, title, subtitle, author, keyword, shortcut, numbers, origin, tag_ids as tagIds," +
+    @Select(" <script> " +
+            " SELECT  id, title, subtitle, author, keyword, shortcut, numbers, origin, tag_ids as tagIds," +
             " category_id as categoryId, special_id as specialId, create_time as createTime, update_time as updateTime," +
             " deploy_time as deployTime, user_id as userId, is_top as isTop, is_recommend as isRecommend, status" +
             " FROM article  " +
@@ -47,7 +48,8 @@ public interface ArticleMapper {
             " <if test= \"author != null and author != '' \" > " +
             " and author = #{author} " +
             " </if> " +
-            "  order by deploy_time desc ")
+            "  order by deploy_time desc  " +
+            " </script>")
     List<Article> getArticleList(Article article);
 
 
