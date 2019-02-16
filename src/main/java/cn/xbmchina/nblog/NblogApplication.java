@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class NblogApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(NblogApplication.class, args);
+		System.setProperty("tomcat.util.http.parser.HttpParser.requestTargetAllow", "|{}.><!");
 	}
 
 }

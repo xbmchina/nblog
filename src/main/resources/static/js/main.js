@@ -1,8 +1,12 @@
 // 下拉加载更多
 $(document).ready(function(){
 
+    $(".headerpage").load("header.html");
+    $(".footerpage").load("footer.html");
+
     loadMore();
     topReturn();
+
 
 });
 
@@ -63,12 +67,12 @@ function topReturn() {
     var showDistance = 1;
 
     //定义一个变量，方便后面加入在html元素标签中插入这个goToTop按钮的标签
-    var goToTopButton = $('<div id="goToTop"><a href="javascript:;">回到顶部</a></div>');
+    var goToTopButton = $('<div id="goToTop"><a href="javascript:;"><i class="icon iconfont">&#xe61d;</i></a></div>');
 
     var thisTop = $(window).scrollTop() + topDistance;
 
     //在container的div里插入我们前面定义好的html标签元素
-    $('.main').append(goToTopButton);
+    $('.container').append(goToTopButton);
 
     //设置goToTop按钮top的css属性和属性值
     $('#goToTop').css('top' ,thisTop);
