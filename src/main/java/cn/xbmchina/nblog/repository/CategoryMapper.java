@@ -1,10 +1,7 @@
 package cn.xbmchina.nblog.repository;
 
 import cn.xbmchina.nblog.entity.Category;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface CategoryMapper {
@@ -29,6 +26,9 @@ public interface CategoryMapper {
             " id=#{id} ")
     int updateCategory(Category category);
 
+
+    @Delete(" DELETE FROM category WHERE id = #{id}")
+    int deleteCategory(Long id);
 
 
     @Select(" SELECT id,name, desc, create_time, update_time " +

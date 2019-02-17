@@ -28,4 +28,13 @@ public class ResponseResult {
         return new ResponseResult(code,message,data);
     }
 
+
+    public static ResponseResult ofError(int code,String message) {
+        return new ResponseResult(code,message,null);
+    }
+
+    public static ResponseResult ofError(String message) {
+        return new ResponseResult(500,message,null);
+    }
+
 }
