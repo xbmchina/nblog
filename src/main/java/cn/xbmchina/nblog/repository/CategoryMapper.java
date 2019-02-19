@@ -3,13 +3,16 @@ package cn.xbmchina.nblog.repository;
 import cn.xbmchina.nblog.entity.Category;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface CategoryMapper {
 
-    @Insert(" INSERT INTO  " +
-            " category " +
-            " ( name, desc, create_time, update_time) " +
-            " VALUES (#{name}, #{desc}, #{createTime}, #{updateTime}) ")
+    @Insert(" <script> " +
+            " INSERT INTO category ( name, description, create_time, update_time)  " +
+            " VALUES  " +
+            " ( #{name}, #{description}, #{createTime}, #{updateTime})  " +
+            " </script> ")
     int addCategory(Category category);
 
 
@@ -19,7 +22,7 @@ public interface CategoryMapper {
             " category " +
             " SET " +
             " name=#{name}," +
-            " desc=#{desc}," +
+            " description=#{description}," +
             " create_time=#{createTime}," +
             " update_time=#{updateTime}" +
             " WHERE  " +
@@ -31,10 +34,21 @@ public interface CategoryMapper {
     int deleteCategory(Long id);
 
 
-    @Select(" SELECT id,name, desc, create_time, update_time " +
+    @Select(" <script>" +
+            " SELECT id,name, description, create_time, update_time " +
             " from category" +
-            " WHERE " +
-            " id = #{id} ")
-    Category selectCategoryById(Category category);
+            " <where> " +
+            " <if test='name != null and name != \"\" ' > " +
+            " and name = #{name} " +
+            "</if>" +
+            " <if test='id != null' > " +
+            " and id = #{id} " +
+            "</if>" +
+            " </where> " +
+            " </script>")
+    Category selectByCondition(Category category);
 
+
+    @Select(" SELECT * FROM category ")
+    List<Category> getList(Category category);
 }

@@ -6,9 +6,68 @@ $(document).ready(function(){
 
     loadMore();
     topReturn();
-
+    getList();
 
 });
+
+
+function getList() {
+
+    console.log("xxxxxxxxxxxxxxxx");
+
+    $.ajax({
+        type: "GET",
+        url: "/article/list",
+        data: null,
+        dataType: "json",
+        success: function(result){
+            var data = result.data.data;
+            var pageNum =result.data.pageNum;
+            console.log("ggggggggg"+data);
+            // $('#resText').empty();   //清空resText里面的所有内容
+            var html = '';
+            $.each(data, function(i, item){
+
+                html += '<div class="list-group-item item_article article shadow">\n' +
+                    '    <div class="row">\n' +
+                    '        <div class="div_center col-9">\n' +
+                    '            <a class="list-group-item-heading div_article_title" href="/detail.html?id='+item.id+'">\n' +
+                    '                <strong>\n' +
+                    '                    '+item.title+'\n' +
+                    '                </strong>\n' +
+                    '            </a>\n' +
+                    '            <p class="list-group-item-text div_article_content">\n' +
+                    '                '+item.shortcut+'\n' +
+                    '            </p>\n' +
+                    '            <div class="article-footer">\n' +
+                    '                <span><i class="fa fa-clock-o"></i>41</span>\n' +
+                    '                <span class="article-author"><i class="fa fa-user"></i>0</span>\n' +
+                    '                <span><i class="fa fa-tag"></i>0</span>\n' +
+                    '                <span><i class="fa fa-tag"></i>Java</span>\n' +
+                    '                <span class="article-viewinfo"><i class="fa fa-eye"></i>2019-01-29</span>\n' +
+                    '            </div>\n' +
+                    '        </div>\n' +
+                    '        <!-- 右侧图片，信息 -->\n' +
+                    '        <div class="col-3 div_right_info">\n' +
+                    '            <img class="iv_article img-rounded" src="img/ic_android1.jpg">\n' +
+                    '        </div>\n' +
+                    '    </div>\n' +
+                    '</div>'
+
+            });
+            if (pageNum == 1){
+                $('.article-content').html(html);
+            }else {
+                $('.article-content').append(html);
+            }
+
+
+        }
+    });
+
+}
+
+
 
 // 加载更多
 function loadMore() {
