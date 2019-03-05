@@ -223,7 +223,26 @@ a:link,a:visited{color:#000000;text-decoration:none;}
 
 
 
-.container { width: 1170px;; margin:0 auto; height:auto; min-height:100%; position:relative; }
+.container { width: 1170px;; margin:0 auto; height:auto; min-height:100%; position:relative;padding: 66px 10px 10px; }
 
 #goToTop {position: absolute; right: -50px; z-index: 9000; }
 #goToTop a { background: none repeat scroll 0 0 #9F9F9F; border: 1px solid #CCCCCC; border-radius: 3px; -webkit-border-radius: 3px;  font-size: 14px; padding: 5px; text-decoration: none; text-shadow: 0 1px 0 #999; -webkit-text-shadow: 0 1px 0 #999; }
+
+
+.headerpage {
+    position: fixed;
+    z-index: 9999;
+    top: 0px;
+    width: 100%;
+    min-width: 1200px;
+    height: 66px;
+    float: left;
+    background-color: white;
+    border-bottom: 1px solid rgb(238, 238, 238);
+}
+
+.footerpage {
+    text-align: center;
+    padding: 20px;
+    background: rgb(255, 255, 255);
+}

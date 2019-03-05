@@ -1,7 +1,8 @@
 $(function(){
 
     $(".headerpage").load("header.html");
-    $(".footerpage").load("footer.html");
+    // $(".footerpage").load("footer.html");
+
     var params = getQueryString();
     // 高亮显示代码
     var rendererMD = new marked.Renderer();
@@ -46,8 +47,6 @@ $(function(){
             var value = item.substring(item.indexOf("=") + 1, item.length);
             param[i]=value;
         }
-        console.log("param:"+param);
-        console.log("getQueryString();"+paraString);
 
         return param;
     }
