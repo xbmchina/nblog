@@ -2,11 +2,13 @@ package cn.xbmchina.nblog.service;
 
 import cn.xbmchina.nblog.common.PageResult;
 import cn.xbmchina.nblog.entity.Article;
+import cn.xbmchina.nblog.entity.vo.ArticleVo;
 import cn.xbmchina.nblog.repository.ArticleMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,25 +41,45 @@ public class ArticleService {
 
 
     public Article getArticle(Article article) {
-
         if (article != null) {
-            return articleMapper.getArticle(article);
+            Article item = articleMapper.getArticle(article);
+            if (item != null) {
+                Article preArticle =  articleMapper.getPreArticle(article);
+                Article nextArticle = articleMapper.getNextArticle(article);
+                if (preArticle != null) {
+                    item.setPreId(preArticle.getId());
+                    item.setPreTitle(preArticle.getTitle());
+                }
+                if (nextArticle != null) {
+                    item.setNextId(nextArticle.getId());
+                    item.setNextTitle(nextArticle.getTitle());
+                }
+
+            }
+            return item;
         }
         return null;
     }
 
 
-    public PageResult<Article> getArticleList(Article article) {
+    public PageResult<ArticleVo> getArticleList(ArticleVo article) {
         if (article != null && article.getPageNum() != null && article.getPageSize() != null){
             PageHelper.startPage(article.getPageNum(),article.getPageSize());
         }else {
             PageHelper.startPage(0,10);
         }
 
-        List<Article> list = articleMapper.getArticleList(article);
-        PageInfo<Article> pageInfo = new PageInfo<>(list);
+        List<ArticleVo> list = articleMapper.getHomeArtList(article);
+        PageInfo<ArticleVo> pageInfo = new PageInfo<>(list);
+        List<ArticleVo> articles = pageInfo.getList();
+        //此处需要添加点赞数、评论数、阅读数
+        for (ArticleVo item : articles) {
+            item.setCommentNum((int)(1+Math.random()*20));
+            item.setLikeNum((int)(1+Math.random()*50));
+            item.setReaderNum((int)(1+Math.random()*100));
+        }
 
-        PageResult<Article> pageResult = new PageResult<>();
+        PageResult<ArticleVo> pageResult = new PageResult<>();
         pageResult.setPageNum(pageInfo.getPageNum());
         pageResult.setPageSize(pageInfo.getPageSize());
         pageResult.setTotal(pageInfo.getTotal());

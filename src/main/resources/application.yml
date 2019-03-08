@@ -17,3 +17,8 @@ pagehelper:
     supportMethodsArguments: true
     params: count=countSql
 
+jwt:
+  header: Authorization
+  tokenHead: "Bearer "
+  admin:
+    tokenHead: "ADMIN "

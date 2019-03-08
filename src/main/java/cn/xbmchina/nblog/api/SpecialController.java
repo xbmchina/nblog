@@ -15,45 +15,6 @@ public class SpecialController {
     @Autowired
     private SpecialService specialService;
 
-    @RequestMapping("/save")
-    public ResponseResult addSpecial(Special special) {
-        if (special != null){
-            int result = specialService.save(special);
-            if (result >0){
-                return ResponseResult.ofSuccess("操作成功！",null);
-            }
-        }
-        return ResponseResult.ofError("操作失败！");
-    }
-
-
-    @RequestMapping("/update")
-    public ResponseResult updateSpecial(Special special) {
-
-        if (special != null && special.getId() != null) {
-            int result = specialService.update(special);
-            if (result >0){
-                return ResponseResult.ofSuccess("操作成功！",null);
-            }
-        }
-        return ResponseResult.ofError("操作失败！");
-    }
-
-
-
-    @RequestMapping("/del")
-    public ResponseResult delSpecial(Long id) {
-
-        if ( id != null) {
-            int result = specialService.delete(id);
-            if (result >0){
-                return ResponseResult.ofSuccess("操作成功！",null);
-            }
-        }
-        return ResponseResult.ofError("操作失败！");
-    }
-
-
     @RequestMapping("/list")
     public ResponseResult getList(Special special,Integer pageNum,Integer pageSize) {
 

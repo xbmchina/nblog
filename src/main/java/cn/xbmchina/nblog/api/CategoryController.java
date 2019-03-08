@@ -16,41 +16,6 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @RequestMapping("/save")
-    public ResponseResult addCategory(Category category) {
-
-        int result = categoryService.addCategory(category);
-        if (result >0){
-            return ResponseResult.ofSuccess("操作成功！",null);
-        }
-        return ResponseResult.ofError("操作失败!");
-    }
-
-
-    @RequestMapping("/update")
-    public ResponseResult updateCategory(Category category) {
-
-        int result = categoryService.updateCategory(category);
-        if (result >0){
-            return ResponseResult.ofSuccess("操作成功！",null);
-        }
-        return ResponseResult.ofError("操作失败!");
-    }
-
-
-
-    @RequestMapping("/del")
-    public ResponseResult delCategory(Long id) {
-
-        int result = categoryService.deleteCategory(id);
-        if (result >0){
-            return ResponseResult.ofSuccess("操作成功！",null);
-        }
-        return ResponseResult.ofError("操作失败!");
-    }
-
-
-
     @RequestMapping("/list")
     public ResponseResult getList(Category category, Integer pageNum, Integer pageSize) {
 
