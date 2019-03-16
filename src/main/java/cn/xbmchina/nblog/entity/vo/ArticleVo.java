@@ -1,7 +1,12 @@
 package cn.xbmchina.nblog.entity.vo;
 
+import cn.xbmchina.nblog.entity.Comment;
 import lombok.Data;
 
+
+/**
+ * 文章表实体类
+ */
 @Data
 public class ArticleVo {
 
@@ -21,6 +26,7 @@ public class ArticleVo {
     private String tagName;//标签名
     private String specialName;//专栏名
     private int status;//状态
+
 
 
     private Integer pageNum;

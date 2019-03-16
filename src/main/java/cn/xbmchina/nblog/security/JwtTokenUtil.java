@@ -14,6 +14,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+/**
+ * 生成token
+ */
 @Component
 public class JwtTokenUtil {
 

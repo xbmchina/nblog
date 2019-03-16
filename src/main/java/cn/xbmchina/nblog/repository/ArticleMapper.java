@@ -1,6 +1,8 @@
 package cn.xbmchina.nblog.repository;
 
 import cn.xbmchina.nblog.entity.Article;
+import cn.xbmchina.nblog.entity.ArticleLikes;
+import cn.xbmchina.nblog.entity.Comment;
 import cn.xbmchina.nblog.entity.vo.ArticleVo;
 import org.apache.ibatis.annotations.*;
 
@@ -105,5 +107,6 @@ public interface ArticleMapper {
             " from article where id &gt; #{id})" +
             " </script> ")
     Article getNextArticle(Article article);
+
 
 }

@@ -6,35 +6,27 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 @Mapper
 public interface CommentMapper {
 
 
-    @Insert(" INSERT INTO  " +
-            " comment " +
-            " (article_id, content, is_top, is_recommend, user_id, status, create_time, update_time)  " +
-            " VALUES (#{articleId}, #{content}, #{isTop}, #{isRecommend}, #{userId}, #{status}, #{createTime}, #{updateTime})")
+    @Insert(" INSERT INTO comments " +
+            " (article_id, user_id, user_name, avatar, content, create_time, children, status, is_top) " +
+            " VALUES ( #{articleId}, #{userId}, #{username}, #{avatar}, #{content}, now(), #{children}, #{status}, #{isTop})")
     int addComment(Comment comment);
 
 
+    @Select(" select *,user_id as userId,user_name as username,create_time as createTime from comments where article_id = #{articleId}  order by is_top,create_time desc ")
+    List<Comment> getCommentsByArticleId(Long articleId);
 
-    @Update(" UPDATE  " +
-            " comment " +
-            " SET  " +
-            " article_id=#{articleId}," +
-            " content=#{content}," +
-            " is_top=#{isTop}," +
-            " is_recommend=#{isRecommend}," +
-            " user_id=#{userId}," +
-            " status=#{status}," +
-            " create_time=#{createTime}," +
-            " update_time=#{updateTime}" +
-            " WHERE id=#{id} ")
+
+    @Select(" select *,user_id as userId,user_name as username from comments where id = #{id}  ")
+    Comment getCommentById(Long id);
+
+
+    @Update("UPDATE comments SET  children=#{children}, status=#{status}, is_top=#{isTop} WHERE id=#{id}")
     int updateComment(Comment comment);
 
-
-
-    @Select(" SELECT id,article_id, content, is_top, is_recommend, user_id, status, create_time, update_time  " +
-            " FROM comment WHERE id  = #{id}")
-    Comment selectCommentById(Comment comment);
 }

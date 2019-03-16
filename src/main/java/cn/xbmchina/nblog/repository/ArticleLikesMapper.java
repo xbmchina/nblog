@@ -12,26 +12,29 @@ public interface ArticleLikesMapper {
 
     @Insert(" INSERT INTO  " +
             " article_likes " +
-            " ( article_id, ip_address, is_like, like_score) " +
-            " VALUES ( #{articleId}, #{ipAddress}, #{isLike}, #{likeScore}) ")
+            " ( article_id, ip_address, is_like, like_score,user_id,create_time) " +
+            " VALUES ( #{articleId}, #{ipAddress}, #{isLike}, #{likeScore},#{userId},#{createTime}) ")
     int addArticleLikes(ArticleLikes articleLikes);
 
 
+    @Select(" <script> SELECT * FROM  article_likes " +
+            " <where> " +
+            "  <if test='id != null'>" +
+            "  and id = #{id} " +
+            " </if>" +
+            "  <if test='userId != null and userId != \"\" '>" +
+            "  and user_id = #{userId} " +
+            " </if>" +
+            "  <if test='articleId != null  '>" +
+            "  and article_id = #{articleId} " +
+            " </if>" +
+            " </where> " +
+            " </script>")
+    ArticleLikes getArtLike(ArticleLikes articleLikes);
 
-    @Update(" UPDATE  " +
-            " article_likes " +
-            " SET  " +
-            " article_id=#{articleId}," +
-            " ip_address=#{ipAddress}," +
-            " is_like=#{isLike}," +
-            " like_score=#{likeScore}" +
-            " WHERE id=#{id} ")
-    int updateArticleLikes(ArticleLikes articleLikes);
 
 
-    @Select(" SELECT id,article_id, ip_address, is_like, like_score " +
-            " FROM  article_likes " +
-            " WHERE id = #{id} ")
-    ArticleLikes selectArticleLikesById(ArticleLikes articleLikes);
+    @Select(" SELECT count(1) FROM  article_likes  where article_id = #{articleId} ")
+    int getArtLikeCount(Long articleId);
 
 }

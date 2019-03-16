@@ -19,66 +19,69 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-
-
+/**
+ * 全局拦截校验权限
+ */
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
-	@Autowired
-	private JwtUserDetailsServiceImpl userDetailsService;
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    private JwtUserDetailsServiceImpl userDetailsService;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
-	@Value("${jwt.header}")
-	private String tokenHeader;
+    @Value("${jwt.header}")
+    private String tokenHeader;
 
-	@Value("${jwt.tokenHead}")
-	private String tokenHead;
+    @Value("${jwt.tokenHead}")
+    private String tokenHead;
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-			throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-		String authHeader = request.getHeader(this.tokenHeader);
-		if (authHeader != null && authHeader.startsWith(tokenHead)) {
-			try {
-				final String authToken = authHeader.substring(tokenHead.length()); // The part after "Bearer "
-				String username = jwtTokenUtil.getUsernameFromToken(authToken);
+        String authHeader = request.getHeader(this.tokenHeader);
+        if (authHeader != null && authHeader.startsWith(tokenHead)) {
+            try {
+                final String authToken = authHeader.substring(tokenHead.length()); // The part after "Bearer "
+                String username = jwtTokenUtil.getUsernameFromToken(authToken);
 
-				logger.info("checking authentication " + username);
+                logger.info("checking authentication " + username);
 
-				if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-					UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-					if (jwtTokenUtil.validateToken(authToken, userDetails)) {
-						UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-								userDetails, null, userDetails.getAuthorities());
-						authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-						logger.info("authenticated user " + username + ", setting security context");
-						SecurityContextHolder.getContext().setAuthentication(authentication);
-					}
-				}
-			} catch (Exception e) {
-				// e.printStackTrace();
-				response.setCharacterEncoding("UTF-8");
-				response.setContentType("application/json; charset=utf-8");
-				String jsonString = JSONObject.toJSONString(ResponseResult.ofError(409,"token无效", null));
-				PrintWriter out = null;
-				try {
-					out = response.getWriter();
-					out.append(jsonString);
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				} finally {
-					if (out != null) {
-						out.close();
-					}
-				}
-			}
-		}
+                    if (jwtTokenUtil.validateToken(authToken, userDetails)) {
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        logger.info("authenticated user " + username + ", setting security context");
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		chain.doFilter(request, response);
-	}
+                    }
+                }
 
+            } catch (Exception e) {
+                // e.printStackTrace();
+                PrintWriter out = null;
+                try {
+                    response.setCharacterEncoding("UTF-8");
+                    response.setContentType("application/json; charset=utf-8");
+                    String jsonString = JSONObject.toJSONString(ResponseResult.ofError(403, "请先登录！！！", null));
+                    out = response.getWriter();
+                    out.append(jsonString);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                } finally {
+                    if (out != null) {
+                        out.close();
+                    }
+                }
+            }
+
+        }
+        chain.doFilter(request, response);
+
+
+    }
 }

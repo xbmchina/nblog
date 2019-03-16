@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 文章相关
@@ -24,18 +25,15 @@ public class Article {
     private Integer specialId;//专栏id
     private Long categoryId;
     private String img;//列表显示缩略图
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private String createTime;
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private String updateTime;
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private String deployTime;
     private Long userId;
     private Integer isTop;
     private Integer isRecommend;
     private int status;
 
-
+    private List<Comment> commentList;//评论列表
 
     private Long preId;
     private String preTitle;
