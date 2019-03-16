@@ -79,6 +79,9 @@ public interface ArticleMapper {
             " <if test= \"title != null and title != '' \" > " +
             " and title LIKE concat(concat('%',#{title}),'%')" +
             " </if> " +
+            " <if test= \"specialId != null \" > " +
+            " and art.special_id = #{specialId}" +
+            " </if> " +
             " </where> " +
             "  order by deploy_time desc  " +
             " </script>")

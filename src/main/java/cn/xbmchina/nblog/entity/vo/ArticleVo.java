@@ -24,7 +24,8 @@ public class ArticleVo {
     private Integer commentNum;//评论数
     private Integer likeNum;//点赞数
     private String tagName;//标签名
-    private String specialName;//专栏名
+    private String specialName;//专栏名称
+    private Integer specialId;//专栏id
     private int status;//状态
 
 

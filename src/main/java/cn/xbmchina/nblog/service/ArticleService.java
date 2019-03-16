@@ -3,10 +3,7 @@ package cn.xbmchina.nblog.service;
 import cn.xbmchina.nblog.common.PageResult;
 import cn.xbmchina.nblog.entity.*;
 import cn.xbmchina.nblog.entity.vo.ArticleVo;
-import cn.xbmchina.nblog.repository.ArticleLikesMapper;
-import cn.xbmchina.nblog.repository.ArticleMapper;
-import cn.xbmchina.nblog.repository.ArticleVisitLogMapper;
-import cn.xbmchina.nblog.repository.CommentMapper;
+import cn.xbmchina.nblog.repository.*;
 import cn.xbmchina.nblog.security.JwtTokenUtil;
 import cn.xbmchina.nblog.security.JwtUserDetailsServiceImpl;
 import cn.xbmchina.nblog.util.IPGetUtil;
@@ -47,6 +44,9 @@ public class ArticleService {
 
     @Autowired
     private SessionUtil sessionUtil;
+
+    @Autowired
+    private MessageMapper messageMapper;
 
     /**
      * 发文章
@@ -200,40 +200,53 @@ public class ArticleService {
 
     public int addComment(Comment comment, HttpServletRequest request) {
 
-        User currentUser = sessionUtil.getCurrentUser(request);
-        if (currentUser==null) {
-            return 0;
-        }
-
         if (comment == null) {
             return 0;
         }
-
-        if (comment.getId() != null && StringUtils.isNotBlank(comment.getChildren())) {//修改子评论
-
-            Comment commentById = commentMapper.getCommentById(comment.getId());
-            if (commentById != null) {
-                String childrenComment = commentById.getChildren();
-                List<ChildComment> childComments = null;
-                if (StringUtils.isNotBlank(childrenComment)) {
-                     childComments = JSONObject.parseArray(childrenComment, ChildComment.class);
-                }else {
-                    childComments = new ArrayList<>();
-                }
-                ChildComment childComment = JSONObject.parseObject(comment.getChildren(), ChildComment.class);
-                childComment.setCreateTime(new Date());
-                childComment.setFid(currentUser.getId());
-                childComment.setFusername(currentUser.getUsername());
-                childComments.add(childComment);
-                comment.setChildren(JSONObject.toJSONString(childComments));
-
-                return commentMapper.updateComment(comment);
-            }
-        } else if (StringUtils.isNotBlank(comment.getUserId()) && comment.getArticleId() != null) {
-            comment.setUserId(currentUser.getId());
-            comment.setUsername(currentUser.getUsername());
-            return commentMapper.addComment(comment);
+        User currentUser = sessionUtil.getCurrentUser(request);
+        if (currentUser==null) {
+            return -1;
         }
+
+        try {
+            if (comment.getId() != null && StringUtils.isNotBlank(comment.getChildren())) {//修改子评论
+
+                Comment commentById = commentMapper.getCommentById(comment.getId());
+                if (commentById != null) {
+                    ChildComment childComment = JSONObject.parseObject(comment.getChildren(), ChildComment.class);
+                    if (childComment != null && childComment.getContent().length() >100){
+                        return -2;
+                    }
+                    String childrenComment = commentById.getChildren();
+                    List<ChildComment> childComments = null;
+                    if (StringUtils.isNotBlank(childrenComment)) {
+                        childComments = JSONObject.parseArray(childrenComment, ChildComment.class);
+                    }else {
+                        childComments = new ArrayList<>();
+                    }
+
+                    childComment.setCreateTime(new Date());
+                    childComment.setFid(currentUser.getId());
+
+                    childComment.setFusername(currentUser.getUsername());
+                    childComments.add(childComment);
+                    comment.setChildren(JSONObject.toJSONString(childComments));
+
+                    return commentMapper.updateComment(comment);
+                }
+            } else if (StringUtils.isNotBlank(comment.getUserId()) && comment.getArticleId() != null) {
+                if (comment.getContent().length() >100){
+                    return -2;
+                }
+
+                comment.setUserId(currentUser.getId());
+                comment.setUsername(currentUser.getUsername());
+                return commentMapper.addComment(comment);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return 0;
     }
 
@@ -267,4 +280,43 @@ public class ArticleService {
     }
 
 
+
+    public int addMessage(Message message , HttpServletRequest request) {
+
+        if (message == null) {
+            return 0;
+        }
+        if (StringUtils.isNotBlank(message.getContent()) && message.getContent().length() > 150) {
+            return -2;
+        }
+        User currentUser = sessionUtil.getCurrentUser(request);
+        if (currentUser==null) {
+            return -1;
+        }
+        if (StringUtils.isNotBlank(message.getEmail()) && StringUtils.isNotBlank(message.getContent())){
+            message.setUserId(currentUser.getId());
+            return messageMapper.addMessage(message);
+        }
+        return 0;
+    }
+
+
+
+    public PageResult<Message> getMessageList(Message message) {
+
+        if (message!= null && message.getPageNum() != null && message.getPageSize() !=null){
+            PageHelper.startPage(message.getPageNum(),message.getPageSize());
+        }else {
+            PageHelper.startPage(1,10);
+        }
+        List<Message> messagesList = messageMapper.getMessagesList(message);
+
+        PageInfo<Message> pageInfo = new PageInfo<>(messagesList);
+        PageResult<Message> pageResult = new PageResult<>();
+        pageResult.setData(pageInfo.getList());
+        pageResult.setTotal(pageInfo.getTotal());
+        pageResult.setPageSize(pageInfo.getPageSize());
+        pageResult.setPageNum(pageInfo.getPageNum());
+        return pageResult;
+    }
 }

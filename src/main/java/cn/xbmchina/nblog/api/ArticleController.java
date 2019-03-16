@@ -5,6 +5,7 @@ import cn.xbmchina.nblog.common.ResponseResult;
 import cn.xbmchina.nblog.entity.Article;
 import cn.xbmchina.nblog.entity.ArticleLikes;
 import cn.xbmchina.nblog.entity.Comment;
+import cn.xbmchina.nblog.entity.Message;
 import cn.xbmchina.nblog.entity.vo.ArticleVo;
 import cn.xbmchina.nblog.security.JwtTokenUtil;
 import cn.xbmchina.nblog.service.ArticleService;
@@ -81,6 +82,10 @@ public class ArticleController {
         int result = articleService.addComment(comment,request);
         if (result > 0) {
             return ResponseResult.ofSuccess("操作成功", null);
+        }else if(result == -1){
+            return  ResponseResult.ofError(403, "请先登录！", null);
+        }else if (result == -2) {
+            return ResponseResult.ofError(404, "童鞋，资源有限，留言不能超150个字！", null);
         }
         return ResponseResult.ofError(500, "操作失败", null);
     }
@@ -103,5 +108,31 @@ public class ArticleController {
         return ResponseResult.ofError(500, "操作失败", null);
 
     }
+
+
+
+
+    /**
+     * 留言
+     *
+     * @param message
+     * @return
+     */
+    @RequestMapping("/addMessage")
+    public ResponseResult addMessage(Message message, HttpServletRequest request) {
+
+        int result = articleService.addMessage(message,request);
+        if (result > 0) {
+            return ResponseResult.ofSuccess("操作成功", null);
+        }else if(result == -1){
+            return  ResponseResult.ofError(403, "请先登录！", null);
+        }else if (result == -2) {
+            return ResponseResult.ofError(500, "童鞋，资源有限，留言不能超150个字！", null);
+        }
+        return ResponseResult.ofError(500, "操作失败", null);
+    }
+
+
+
 
 }
