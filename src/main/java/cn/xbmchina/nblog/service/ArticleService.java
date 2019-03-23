@@ -1,21 +1,26 @@
 package cn.xbmchina.nblog.service;
 
 import cn.xbmchina.nblog.common.PageResult;
+import cn.xbmchina.nblog.common.ResponseResult;
 import cn.xbmchina.nblog.entity.*;
 import cn.xbmchina.nblog.entity.vo.ArticleVo;
 import cn.xbmchina.nblog.repository.*;
 import cn.xbmchina.nblog.security.JwtTokenUtil;
 import cn.xbmchina.nblog.security.JwtUserDetailsServiceImpl;
 import cn.xbmchina.nblog.util.IPGetUtil;
+import cn.xbmchina.nblog.util.RedisUtil;
 import cn.xbmchina.nblog.util.SessionUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +53,10 @@ public class ArticleService {
     @Autowired
     private MessageMapper messageMapper;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
      * 发文章
      *
@@ -105,14 +114,26 @@ public class ArticleService {
      * @param article
      * @return
      */
-    public PageResult<ArticleVo> getArticleList(ArticleVo article) {
+    public String getArticleList(ArticleVo article) {
+
+        int pageNum = 0;
+        int pageSize = 10;
 
         if (article != null && article.getPageNum() != null && article.getPageSize() != null) {
-            PageHelper.startPage(article.getPageNum(), article.getPageSize());
-        } else {
-            PageHelper.startPage(0, 10);
+            pageNum = article.getPageNum();
+            pageSize = article.getPageSize();
         }
 
+        try {
+            if (StringUtils.isBlank(article.getTitle())){
+                return redisUtil.get(article.getPageNum()+"_"+article.getPageSize());
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
+
+        PageHelper.startPage(pageNum, pageSize);
         List<ArticleVo> list = articleMapper.getHomeArtList(article);
         PageInfo<ArticleVo> pageInfo = new PageInfo<>(list);
         List<ArticleVo> articles = pageInfo.getList();
@@ -141,7 +162,20 @@ public class ArticleService {
         pageResult.setTotal(pageInfo.getTotal());
         pageResult.setData(pageInfo.getList());
 
-        return pageResult;
+        if (pageResult == null) {
+            return JSONObject.toJSONString(ResponseResult.ofError(500, "查询失败", null));
+        }
+
+        String jsonString = JSONObject.toJSONString(ResponseResult.ofSuccess("查询成功", pageResult));
+        try {
+            if (StringUtils.isNotBlank(jsonString)) {
+                redisUtil.set(article.getPageNum()+"_"+article.getPageSize(),jsonString);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
+        return jsonString;
     }
 
 

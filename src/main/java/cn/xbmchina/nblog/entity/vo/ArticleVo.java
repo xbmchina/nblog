@@ -1,6 +1,5 @@
 package cn.xbmchina.nblog.entity.vo;
 
-import cn.xbmchina.nblog.entity.Comment;
 import lombok.Data;
 
 

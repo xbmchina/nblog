@@ -51,4 +51,10 @@ public class UserController {
         return ResponseResult.ofError(500,"登录失败",null);
     }
 
+    @RequestMapping("/logout")
+    public ResponseResult loginOut(User user) {
+
+       return ResponseResult.ofSuccess("退出成功！",null);
+    }
+
 }

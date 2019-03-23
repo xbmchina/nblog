@@ -39,13 +39,10 @@ public class ArticleController {
     }
 
     @RequestMapping("/list")
-    public ResponseResult getArticleList(ArticleVo article) {
+    public String getArticleList(ArticleVo article) {
 
-        PageResult<ArticleVo> list = articleService.getArticleList(article);
-        if (list != null) {
-            return ResponseResult.ofSuccess("查询成功", list);
-        }
-        return ResponseResult.ofError(500, "查询失败", null);
+        return  articleService.getArticleList(article);
+
     }
 
 

@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
 
-    @Insert("INSERT INTO USER (id,username,password,phone,email, address,sex,icon,remark,ip,create_time,last_time,activated)"+
+    @Insert("INSERT INTO user (id,username,password,phone,email, address,sex,icon,remark,ip,create_time,last_time,activated)"+
             "VALUES ( #{id},#{username}, #{password}, #{phone}, #{email},#{address},#{sex},#{icon},#{remark},#{ip},#{createTime},#{lastTime},#{activated})" )
     int insert(User user);
 
